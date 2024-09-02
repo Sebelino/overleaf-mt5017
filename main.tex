@@ -1,0 +1,57 @@
+\documentclass{article}
+\title{Problem set, MT5017}
+\author{Ville Sebastian Olsson}
+\usepackage[a4paper,margin=2em]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{dsfont}
+\usepackage[parfill]{parskip}
+\usepackage{hyperref} % Clickable ToC
+\hypersetup{colorlinks}
+
+\usepackage{sebelino-mathlib} % Custom sty file
+\setcounter{secnumdepth}{0}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Bonus exercises}
+\subsection{Exercise 4}
+
+Let \(x_1,\ldots,x_n\) be a sample (measured in units of mm) of independent
+realizations of \(X\) with density \(f_X(\cdot |\theta)\) and let \(y_1, \ldots , y_n\) be the same sample in units of m. Find the likelihood ratio
+\[\frac{L_X(\theta|x)}{L_Y(\theta|y)}\]
+
+\textbf{Solution:}
+
+Since \(x_1,\ldots,x_n\) are independent realizations of \(X\), and \(\forall k: y_k=\frac{1}{1000}x_k\), we can consider \(y_1,\ldots y_n\) to be independent realizations of a random variable \(Y=h(X)\) where
+\(h(t)=\frac{1}{1000}t\).
+
+Then \(h^{-1}(t) = 1000t\).
+
+\begin{align*}
+     & \frac{L_X(\theta|x)}{L_Y(\theta|y)} \\
+    =& \frac{f_X(x|\theta)}{f_Y(y|\theta)} \\
+    =& \frac{f_{X_{1:n}}(x_1,\ldots x_n|\theta)}{f_{Y_{1:n}}(y_1\ldots y_n|\theta)} \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{f_{Y_{1:n}}(y_1,\ldots,y_n|\theta)} & (\text{since }X_1,\ldots X_n\text{ independent}) \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{Y_k}(y_k|\theta)} & (\text{since }Y_1,\ldots Y_n\text{ independent}) \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n \left( f_{X_k}(h^{-1}(y_k)|\theta) \cdot |\frac{d}{dy}h^{-1}(y)| \right)} & (\text{Transformation theorem}) \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(h^{-1}(y_k)|\theta) \cdot \prod_{k=1}^n |\frac{d}{dy}h^{-1}(y)|} \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(1000y_k|\theta) \cdot \prod_{k=1}^n |\frac{d}{dy}1000y|} \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(1000y_k|\theta) \cdot \prod_{k=1}^n 1000} \\
+    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(x_k|\theta) \cdot \prod_{k=1}^n 1000} \\
+    =& \frac{1}{\prod_{k=1}^n 1000} \\
+    =& \frac{1}{1000^n} \\
+\end{align*}
+
+\section{Misc problems}
+\subsection{Boxes with chips [draft]}
+
+\begin{align*}
+     & P(X_1=0\cap \ldots \cap X_3=0\cap X_4=1 \cap X_5=0 \cap\ldots \cap X_{10}=0) \\
+    =& P(X_1=0)\cap X_3=0\cap X_4=1 \cap X_5=0 \cap\ldots \cap X_{10}=0) \\
+\end{align*}
+
+\end{document}
