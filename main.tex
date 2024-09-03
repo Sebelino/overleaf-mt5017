@@ -34,7 +34,7 @@ Then \(h^{-1}(t) = 1000t\).
 \begin{align*}
      & \frac{L_X(\theta|x)}{L_Y(\theta|y)} \\
     =& \frac{f_X(x|\theta)}{f_Y(y|\theta)} \\
-    =& \frac{f_{X_{1:n}}(x_1,\ldots x_n|\theta)}{f_{Y_{1:n}}(y_1\ldots y_n|\theta)} \\
+    =& \frac{f_{X_{1:n}}(x_1,\ldots, x_n|\theta)}{f_{Y_{1:n}}(y_1\ldots, y_n|\theta)} \\
     =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{f_{Y_{1:n}}(y_1,\ldots,y_n|\theta)} & (\text{since }X_1,\ldots X_n\text{ independent}) \\
     =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{Y_k}(y_k|\theta)} & (\text{since }Y_1,\ldots Y_n\text{ independent}) \\
     =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n \left( f_{X_k}(h^{-1}(y_k)|\theta) \cdot |\frac{d}{dy}h^{-1}(y)| \right)} & (\text{Transformation theorem}) \\
@@ -49,9 +49,35 @@ Then \(h^{-1}(t) = 1000t\).
 \section{Misc problems}
 \subsection{Boxes with chips [draft]}
 
+Let \(X\) be a random variable such that \(X=1\) if you pick a defective chip from box A, and \(X=0\) otherwise.
+
+In one box, 10 \% are defective. In the other, 50 \% are defective. Therefore, \(X\) is Bernoulli-distributed:
+\[X \sim \text{Ber}(\theta)\]
+with PMF:
+\[p_X(x) = \casesiii{\theta}{x=1}{1-\theta}{x=0}{0}\]
+where \(\theta=\frac{1}{10} \vee \theta=\frac{1}{2}\).
+
+You devise an experiment where you pick 10 chips from box A.
+
+Your experiment will involve a \textit{random sample} which is a collection of 10 random variables: \(X_1,\ldots,X_{10}\).
+
+When you perform the experiment, a \textit{realization} of the random sample is created: \(x_1, \ldots, x_{10}\).
+
+In this case,
+\[(x_1,x_2,x_3,x_4,x_5,x_6,x_7,x_8,x_9,x_{10})=(0,0,0,1,0,0,0,0,0,0)\]
+
 \begin{align*}
      & P(X_1=0\cap \ldots \cap X_3=0\cap X_4=1 \cap X_5=0 \cap\ldots \cap X_{10}=0) \\
-    =& P(X_1=0)\cap X_3=0\cap X_4=1 \cap X_5=0 \cap\ldots \cap X_{10}=0) \\
+    =& P(X_1=0)\cdots P(X_3=0)\cdot P(X_4=1) \cdot P(X_5=0) \cdots P(X_{10}=0) & (X_1,\ldots,X_{10}\text{ independent}) \\
+    =& P(X_1=0)^9\cdot P(X_4=1) & (X_1,\ldots,X_{10}\text{ identically distributed}) \\
+    =& P(X=0)^9\cdot P(X=1) \\
+    =& p_X(0)^9\cdot p_X(1) \\
+    =& (1-\theta)^9\theta \\
+    =& \casesiie{(1-\frac{1}{10})^9\cdot \frac{1}{10}}{\theta=\frac{1}{10}}{(1-\frac{1}{2})^9\cdot \frac{1}{2}}{\theta=\frac{1}{2}} \\
+    =& \casesiie{3.9 \%}{\theta=\frac{1}{10}}{0.098 \%}{\theta=\frac{1}{2}} \\
 \end{align*}
+The realization is more probable if \(\theta=\frac{1}{10}\), so the likelihood of \(\theta=\frac{1}{10}\) is greater.
+
+Therefore, box A is probably the box with 10 \% defective chips in it.
 
 \end{document}
