@@ -7,8 +7,11 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{dsfont}
+\usepackage{mathtools}
 \usepackage[parfill]{parskip}
 \usepackage{hyperref} % Clickable ToC
+\usepackage{tikz}
+\usepackage[breakable]{tcolorbox}
 \hypersetup{colorlinks}
 
 \usepackage{sebelino-mathlib} % Custom sty file
@@ -18,43 +21,834 @@
 \tableofcontents
 
 \section{Bonus exercises}
-\subsection{Exercise 4}
+\subsection{Additional exercise 4}
 
+\begin{sproblem}
 Let \(x_1,\ldots,x_n\) be a sample (measured in units of mm) of independent
 realizations of \(X\) with density \(f_X(\cdot |\theta)\) and let \(y_1, \ldots , y_n\) be the same sample in units of m. Find the likelihood ratio
 \[\frac{L_X(\theta|x)}{L_Y(\theta|y)}\]
+\end{sproblem}
+
+\textbf{Solution 1:}
+\begin{ssolution}
+\(x=(x_1,\ldots,x_n)\) are realizations of a random sample \(X_{1:n}=(X_1,\ldots,X_n)\) of a random variable \(X\).
+Since \(X\) has a PDF \(f_X(\cdot|\theta)\), it is a continuous r.v.
+
+We can consider \(y=(x_1,\ldots, y_n)\) to be realizations of a random sample \(Y_{1:n}=(Y_1,\ldots, Y_n)\)
+of a random variable \(Y\).
+Since it is true by definition that every realization \(y_k\) is a thousandth of \(x_k\), the following conditions hold:
+\[\forall k: x_k = 1000y_k\]
+\[\forall k: X_k = 1000Y_k\]
+\[X = 1000Y\]
+
+We start by simplifying \(L_X(\theta|x)\):
+\begin{align*}
+	 & L_X(\theta|x) \\
+	=& f_{X_{1:n}}(x|\theta) & (\text{rewrite as joint PDF}) \\
+	=& f_{X_1,\ldots,X_n}(x_1,\ldots,x_n|\theta) \\
+	=& f_{X_1}(x_1|\theta)\cdot \ldots \cdot f_{X_n}(x_n|\theta) & (X_1,\ldots,X_n \text{ independent}) \\
+	=& \prod_{k=1}^n f_{X_k}(x_k|\theta) \\
+	=& \prod_{k=1}^n f_X(x_k|\theta) & (X_1,\ldots,X_n\text{ identically distributed as \(X\)})
+\end{align*}
+
+We use the transformation theorem to simplify \(L_Y(\theta|y)\).
+Let \(h(t) = \frac{1}{1000}t\).
+Then \(Y=h(X)\), and \(h^{-1}(t) = 1000t\).
+\begin{align*}
+	 & L_Y(\theta|y) \\
+	=& f_{Y_{1:n}}(y|\theta) & (\text{rewrite as joint PDF}) \\
+	=& f_{Y_1,\ldots,Y_n}(y_1,\ldots,y_n|\theta) \\
+	=& f_{Y_1}(y_1|\theta)\cdot \ldots \cdot f_{Y_n}(y_n|\theta) & (Y_1,\ldots,Y_n \text{ independent}) \\
+	=& \prod_{k=1}^n f_{Y_k}(y_k|\theta) \\
+	=& \prod_{k=1}^n f_Y(y_k|\theta) & (Y_1,\ldots, Y_n\text{ identically distributed as \(Y\)}) \\
+	=& \prod_{k=1}^n \left( f_X(h^{-1}(y_k)|\theta) \cdot \left|\frac{d}{dy_k}h^{-1}(y_k)\right| \right) & (\text{Transformation theorem}) \\
+	=& \prod_{k=1}^n \left( f_X(1000y_k|\theta) \cdot \left|\frac{d}{dy_k}1000y_k\right| \right) \\
+	=& \prod_{k=1}^n \left( f_X(1000y_k|\theta) \cdot 1000 \right) \\
+	=& \prod_{k=1}^n \left( f_X(x_k|\theta) \cdot 1000 \right) \\
+	=& 1000^n\prod_{k=1}^n f_X(x_k|\theta)
+\end{align*}
+
+The ratio becomes:
+\[\frac{L_X(\theta|x)}{L_Y(\theta|y)} = \frac{\prod_{k=1}^n f_X(x_k|\theta)}{1000^n\prod_{k=1}^n f_X(x_k|\theta)} = \frac{1}{1000^n} \]
+\end{ssolution}
+
+\textbf{Solution 2:}
+\begin{ssolution}
+\begin{align*}
+	 & f_Y(y|\theta) \\
+	=& \frac{d}{dy} F_Y(y|\theta) \\
+	=& \frac{d}{dy} P(Y\leq y|\theta) \\
+	=& \frac{d}{dy} P(1000Y\leq 1000y|\theta) \\
+	=& \frac{d}{dy} P(X\leq 1000y|\theta) \\
+	=& \frac{d}{dy} F_X(1000y|\theta) \\
+	=& \frac{d}{dy} F'_X(1000y|\theta) \cdot \frac{d}{dy} 1000y & (\text{Chain rule}) \\
+	=& 1000f_X(1000y|\theta) \\
+	=& 1000f_X(x|\theta)
+\end{align*}
+
+\begin{align*}
+	 & L(\theta|y_{1:n}) \\
+	=& f_{Y_{1:n}}(y|\theta) \\
+	=& \prod_{k=1}^n f_Y(y|\theta) \\
+	=& \prod_{k=1}^n (1000f_X(x|\theta)) \\
+	=& 10^{3n}\prod_{k=1}^n f_X(x|\theta) \\
+\end{align*}
+\[\frac{L_X(\theta|x)}{L_Y(\theta|y)} = \frac{\prod_{k=1}^n f_X(x_k|\theta)}{10^{3n}\prod_{k=1}^n f_X(x_k|\theta)} = \frac{1}{1000^n} \]
+\end{ssolution}
+
+\subsection{Additional exercise 1}
+
+\begin{sproblem}
+Find the score function and the observed Fisher information for:
+\end{sproblem}
+
+\begin{ssubproblem}
+\textbf{a)}
+\(\theta\) if \(X \sim \operatorname{Geom}(\theta)\)
+\end{ssubproblem}
 
 \textbf{Solution:}
+\begin{ssolution}
+Presuming \(X \sim \operatorname{Geom}(\theta)\) refers to the shifted geometric
+distribution, i.e. \(\operatorname{supp}(p_X) = \mathbb{N}_1\).
 
-Since \(x=(x_1,\ldots,x_n)\) are independent realizations of \(X\), and \(\forall k: y_k=\frac{1}{1000}x_k\), we can consider \(y=(y_1,\ldots, y_n)\) to be independent realizations of a random variable \(Y=h(X)\) where
-\(h(t)=\frac{1}{1000}t\).
+Also presuming we are considering the likelihood of a single realization, \(x\).
 
-Then \(h^{-1}(t) = 1000t\), and the ratio is calculated as follows:
+Log-likelihood function:
 \begin{align*}
-     & \frac{L_X(\theta|x)}{L_Y(\theta|y)} \\
-    =& \frac{f_X(x|\theta)}{f_Y(y|\theta)} \\
-    =& \frac{f_{X_{1:n}}(x_1,\ldots, x_n|\theta)}{f_{Y_{1:n}}(y_1\ldots, y_n|\theta)} \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{f_{Y_{1:n}}(y_1,\ldots,y_n|\theta)} & (\text{since }X_1,\ldots X_n\text{ independent}) \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{Y_k}(y_k|\theta)} & (\text{since }Y_1,\ldots Y_n\text{ independent}) \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n \left( f_{X_k}(h^{-1}(y_k)|\theta) \cdot |\frac{d}{dy}h^{-1}(y)| \right)} & (\text{Transformation theorem}) \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(h^{-1}(y_k)|\theta) \cdot \prod_{k=1}^n |\frac{d}{dy}h^{-1}(y)|} \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(1000y_k|\theta) \cdot \prod_{k=1}^n |\frac{d}{dy}1000y|} \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(1000y_k|\theta) \cdot \prod_{k=1}^n 1000} \\
-    =& \frac{\prod_{k=1}^n f_{X_k}(x_k|\theta)}{\prod_{k=1}^n f_{X_k}(x_k|\theta) \cdot \prod_{k=1}^n 1000} \\
-    =& \frac{1}{\prod_{k=1}^n 1000} \\
-    =& \frac{1}{1000^n} \\
+	& \ell(\theta;x) \\
+	=& \ln \mathcal{L}(\theta;x) \\
+	=& \ln p_X(x;\theta) \\
+	=& \ln \left((1-\theta)^{x-1}\theta\right) \\
+	=& \ln (1-\theta)^{x-1} + \ln \theta \\
+	=& (x-1)\ln (1-\theta) + \ln \theta \\
 \end{align*}
+
+Score function:
+\begin{align*}
+	 & S(\theta;x) \\
+	=& \frac{d}{d\theta} \ell(\theta;x) \\
+	=& \frac{d}{d\theta} \left((x-1)\ln (1-\theta) + \ln \theta\right) \\
+	=& \frac{1}{\theta}-\frac{x-1}{1-\theta} \\
+\end{align*}
+
+MLE:
+\begin{align*}
+	& S(\hat{\theta}_{ML};x) = 0 \\
+	\Rightarrow& \frac{1}{\hat{\theta}_{ML}}-\frac{x-1}{1-\hat{\theta}_{ML}} = 0 \\
+	\Rightarrow& 1-\hat{\theta}_{ML}-(x-1)\hat{\theta}_{ML} = 0 \\
+	\Rightarrow& 1-\hat{\theta}_{ML}-x\hat{\theta}_{ML}+\hat{\theta}_{ML} = 0 \\
+	\Rightarrow& \hat{\theta}_{ML} = \frac{1}{x} \\
+\end{align*}
+
+Fisher information:
+\begin{align*}
+	& \mathcal{I}(\theta;x) \\
+	=& -\frac{d}{d\theta}S(\theta;x) \\
+	=& -\frac{d}{d\theta}\left(\frac{1}{\theta}-\frac{x-1}{1-\theta}\right) \\
+	=& -\left(-\frac{1}{\theta^2}-\frac{x-1}{(1-\theta)^2}\right) \\
+	=& \frac{1}{\theta^2}+\frac{x-1}{(1-\theta)^2} \\
+\end{align*}
+
+Observed Fisher information:
+\begin{align*}
+	& \mathcal{I}(\hat{\theta}_{ML}) \\
+	=& \mathcal{I}\left(\frac{1}{x}\right) \\
+	=& \frac{1}{(\frac{1}{x})^2}+\frac{x-1}{(1-\frac{1}{x})^2} \\
+	=& x^2+\frac{x-1}{(1-\frac{1}{x})^2} \\
+	=& x^2+\frac{x^2(x-1)}{(x-1)^2} \\
+	=& x^2+\frac{x^2}{x-1} \\
+	=& \frac{x^2(x-1)+x^2}{x-1} \\
+	=& \frac{x^3-x^2+x^2}{x-1} \\
+	=& \frac{x^3}{x-1}
+\end{align*}
+\end{ssolution}
+
+\begin{ssubproblem}
+\textbf{b)}
+\(\psi=\theta^2\) if \(X \sim \operatorname{Geom}(\theta)\)
+\end{ssubproblem}
+
+\textbf{Solution:}
+\begin{ssolution}
+Let \(h : \mathbb{R}_{\geq 0} \to \mathbb{R}_{\geq 0}\) defined by \(h(\theta) = \theta^2\).
+\(h\) is bijective and has an inverse \(h^{-1}(\psi) = \sqrt{\psi}\).
+
+Then \(\psi = h(\theta)\).
+
+Score function:
+\begin{align*}
+	& S_\psi(\psi;x) \\
+	=& \frac{d}{d\psi}\ell_\psi(\psi) \\
+	=& \frac{d}{d\psi}\ell_\theta(h^{-1}(\psi)) \\
+	=& \frac{d}{d \psi} h^{-1}(\psi) \cdot \left.\frac{d}{d\psi}\ell_\theta(\theta)\right|_{\theta=h^{-1}(\psi)} \\
+	=& \frac{d}{d \psi} \sqrt{\psi} \cdot \left.\frac{d}{d\psi}\left((x-1)\ln(1-\theta)+\ln{\theta}\right)\right|_{\theta=\sqrt{\psi}} \\
+	=& \frac{1}{2\sqrt{\psi}} \cdot \left.\left(-\frac{x-1}{1-\theta} + \frac{1}{\theta}\right)\right|_{\theta=\sqrt{\psi}} \\
+	=& \frac{1}{2\sqrt{\psi}} \cdot \left(\frac{1}{\sqrt{\psi}}-\frac{x-1}{1-\sqrt{\psi}}\right) \\
+	=& \frac{1}{2\psi}-\frac{x-1}{2\sqrt{\psi}(1-\sqrt{\psi})} \\
+\end{align*}
+
+Observed Fisher information:
+\begin{align*}
+	& \mathcal{I}_\psi(\hat{\psi}_{ML}) \\
+	=& \left(\left.\frac{d}{d\psi}h^{-1}(\psi)\right|_{\psi=\hat{\psi}_{ML}}\right)^2\mathcal{I}_\theta(\hat{\theta}_{ML}) \\
+	=& \left(\frac{1}{2\sqrt{\hat{\psi}_{ML}}}\right)^2\cdot \frac{x^3}{x-1} \\
+	=& \left(\frac{1}{2\sqrt{\hat{\theta}_{ML}^2}}\right)^2\cdot \frac{x^3}{x-1} \\
+	=& \left(\frac{1}{2\sqrt{(\frac{1}{x})^2}}\right)^2\cdot \frac{x^3}{x-1} \\
+	=& \frac{x^2}{4}\cdot \frac{x^3}{x-1} \\
+	=& \frac{x^5}{4(x-1)} \\
+\end{align*}
+\end{ssolution}
+
+\begin{ssubproblem}
+\textbf{c)}
+\(\theta\) if \(X = (X_1,\ldots,X_n)\) where \(X_1,\ldots,X_n\)
+are independent \(LN(\theta,1)\)
+\end{ssubproblem}
+
+\textbf{Solution:}
+\begin{ssolution}
+PDF for \(X_k \sim LN(\theta,1)\), with support \(x>0\):
+\[f_{X_k}(x_k;\theta) = \frac{1}{x_k\sqrt{2\pi}}e^{-\frac{1}{2}(\ln{x_k}-\theta)^2}\]
+for all \(k\in \mathbb{Z}_n\).
+
+Likelihood:
+\begin{align*}
+	& \mathcal{L}(\theta;x_{1:n}) \\
+	=& f_{X_1,\ldots,X_n}(x_1,\ldots,x_n;\theta) \\
+	=& \prod_{k=1}^nf_{X_k}(x_k;\theta) \\
+	=& \prod_{k=1}^n\left(\frac{1}{x_k\sqrt{2\pi}}e^{-\frac{1}{2}(\ln{x_k}-\theta)^2}\right) \\
+	=& \prod_{k=1}^n \frac{1}{\sqrt{2\pi}}\prod_{k=1}^n\frac{1}{x_k} \prod_{k=1}^n e^{-\frac{1}{2}(\ln{x_k}-\theta)^2} \\
+	=& (2\pi)^{-\frac12 n}\prod_{k=1}^n(x_k)^{-1} e^{-\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2} \\
+\end{align*}
+
+Log-likelihood:
+\begin{align*}
+	& \ell(\theta;x_{1:n}) \\
+	=& \ln \mathcal{L}(\theta;x_{1:n}) \\
+	=& \ln \left( (2\pi)^{-\frac12 n}\prod_{k=1}^n(x_k)^{-1} e^{-\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2} \right) \\
+	=& \ln (2\pi)^{-\frac12 n} + \ln \prod_{k=1}^n(x_k)^{-1} + \ln e^{-\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2} \\
+	=& -\frac{1}{2}n\ln (2\pi) + \sum_{k=1}^n\ln ((x_k)^{-1}) -\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2 \\
+	=& -\frac{\ln(2\pi)}{2}n - \sum_{k=1}^n\ln x_k -\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2 \\
+\end{align*}
+
+Log-likelihood kernel:
+\[\ell_{\text{kern}}(\theta;x_{1:n}) = -\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2 \]
+
+Score function:
+\begin{align*}
+	& S(\theta;x_{1:n}) \\
+	=& \frac{d}{d\theta}\ell(\theta;x_{1:n}) \\
+	=& \frac{d}{d\theta}\ell_{\text{kern}}(\theta;x_{1:n}) \\
+	=& \frac{d}{d\theta} \left(-\frac{1}{2}\sum_{k=1}^n(\ln{x_k}-\theta)^2\right) \\
+	=& -\frac{1}{2}\frac{d}{d\theta} \sum_{k=1}^n(\ln{x_k}-\theta)^2 \\
+	=& -\frac{1}{2}\sum_{k=1}^n(-2)(\ln{x_k}-\theta) \\
+	=& \sum_{k=1}^n(\ln{x_k}-\theta) \\
+	=& \sum_{k=1}^n\ln{x_k}-n\theta \\
+\end{align*}
+
+MLE:
+\begin{align*}
+	& S(\hat{\theta}_{ML};x_{1:n}) = 0 \\
+	\Rightarrow& \sum_{k=1}^n\ln{x_k}-n\theta = 0 \\
+	\Rightarrow& \hat{\theta}_{ML} = \frac{1}{n}\sum_{k=1}^n\ln{x_k} \\
+\end{align*}
+
+Fisher information:
+
+\begin{align*}
+	& \mathcal{I}(\theta;x_{1:n}) \\
+	=& -\frac{d}{d\theta} S(\theta;x_{1:n}) \\
+	=& -\frac{d}{d\theta} \left(\sum_{k=1}^n \ln x_k - n\theta\right) \\
+	=& - \left(- n\right) \\
+	=& n \\
+\end{align*}
+
+Observed Fisher information:
+\[\mathcal{I}(\hat{\theta}_{ML};x_{1:n}) = n\]
+\end{ssolution}
+
+\begin{ssubproblem}
+\textbf{d)}
+\(\theta\) if \(X = (X_1,\ldots,X_n)\) where \(X_1,\ldots,X_n\)
+are independent random variables and \(X_i \sim
+\mathcal{N}(\theta i,1)\)
+\end{ssubproblem}
+
+\textbf{Solution:}
+\begin{ssolution}
+PDF of \(X_k \sim \mathcal{N}(\theta k,1)\):
+\[f_{X_k}(x_k;\theta) = \frac{1}{\sqrt{2\pi}} e^{-\frac12(x_k-\theta k)^2}\]
+for all \(k\in\mathbb{Z}_n\).
+
+Likelihood:
+\begin{align*}
+	& L(\theta;x_{1:n}) \\
+	=& f_{X_1,\ldots,X_n}(x_1,\ldots,x_n;\theta) \\
+	=& \prod_{k=1}^n f_{X_k}(x_k;\theta) \\
+	=& \prod_{k=1}^n \left(\frac{1}{\sqrt{2\pi}} e^{-\frac12(x_k-\theta k)^2}\right) \\
+	=& \prod_{k=1}^n \frac{1}{\sqrt{2\pi}} \prod_{k=1}^n e^{-\frac12(x_k-\theta k)^2} \\
+	=& (2\pi)^{-\frac n2} e^{-\frac12\sum_{k=1}^n(x_k-\theta k)^2} \\
+\end{align*}
+
+Likelihood kernel:
+\[L_{\text{kern}}(\theta;x_{1:n}) = e^{-\frac12\sum_{k=1}^n(x_k-\theta k)^2}\]
+
+Log-likelihood:
+\begin{align*}
+	& \ell(\theta;x_{1:n}) \\
+	=& \ln L_{\text{kern}}(\theta;x_{1:n}) \\
+	=& \ln e^{-\frac12\sum_{k=1}^n(x_k-\theta k)^2} \\
+	=& -\frac12\sum_{k=1}^n(x_k-\theta k)^2 \\
+\end{align*}
+
+Score function:
+\begin{align*}
+	& S(\theta;x_{1:n}) \\
+	=& \frac{d}{d\theta} \ell(\theta;x_{1:n}) \\
+	=& \frac{d}{d\theta} \left(-\frac12\sum_{k=1}^n(x_k-\theta k)^2\right) \\
+	=& -\frac12 \sum_{k=1}^n\frac{d}{d\theta}(x_k-\theta k)^2 \\
+	=& -\frac12 \sum_{k=1}^n(-2k)(x_k-\theta k) \\
+	=& \sum_{k=1}^n k(x_k-\theta k) \\
+\end{align*}
+
+MLE:
+\begin{align*}
+	& S(\hat{\theta}_{ML}) = 0 \\
+	\Rightarrow& \sum_{k=1}^n k(x_k-\hat{\theta}_{ML} k) = 0 \\
+	\Rightarrow& \sum_{k=1}^n (kx_k-\hat{\theta}_{ML} k^2) = 0 \\
+	\Rightarrow& \sum_{k=1}^n \hat{\theta}_{ML} k^2 = \sum_{k=1}^n kx_k \\
+	\Rightarrow& \hat{\theta}_{ML}\sum_{k=1}^n k^2 = \sum_{k=1}^n kx_k \\
+	\Rightarrow& \hat{\theta}_{ML} = \frac{\sum_{k=1}^n kx_k}{\sum_{k=1}^n k^2} \\
+	\Rightarrow& \hat{\theta}_{ML} = \frac{\sum_{k=1}^n kx_k}{\frac16 n(n+1)(2n+1)} \\
+	\Rightarrow& \hat{\theta}_{ML} = \frac{6\sum_{k=1}^n kx_k}{n(n+1)(2n+1)} \\
+\end{align*}
+
+Fisher information:
+\begin{align*}
+	& \mathcal{I}(\theta;x_{1:n}) \\
+	=& -\frac{d}{d\theta}S(\theta;x_{1:n}) \\
+	=& -\frac{d}{d\theta}\sum_{k=1}^n k(x_k-\theta k) \\
+	=& -\sum_{k=1}^n k\frac{d}{d\theta} (x_k-\theta k) \\
+	=& -\sum_{k=1}^n k (-k) \\
+	=& \sum_{k=1}^n k^2 \\
+	=& \frac16n(n+1)(2n+1) \\
+\end{align*}
+
+Observed Fisher information:
+\[\mathcal{I}(\hat{\theta}_{ML}) = \frac16n(n+1)(2n+1)\]
+\end{ssolution}
+
+\subsection{Bonus 3}
+
+\begin{sproblem}
+Derive the quadratic approximation of the relative log-likelihood in the following two situations:
+\end{sproblem}
+
+\begin{ssubproblem}
+\textbf{1)} \(X_{1:n}\) is a random sample from a normal distribution \(N(\mu,
+\sigma^2)\) with known mean \(\mu\) and unknown variance \(\sigma^2\).
+\end{ssubproblem}
+
+\textbf{Solution:}
+\begin{ssolution}
+\(\mu\) is a nuisance parameter and \(\sigma^2\) is our estimand. \(x_{1:n}\) is a realization of \(X_{1:n}\). Let \(v=\sigma^2\) for brevity.
+
+We can make a quadratic approximation of the relative likelihood by performing a
+second-order Taylor expansion at the MLE \(\hat{v}_{ML}\), with remainder \(R(v)\):
+\begin{align*}
+	& \ell(v) = \ell(\hat{v}_{ML}) + \ell'(\hat{v}_{ML})(v-\hat{v}_{ML})+\frac12\ell''(\hat{v}_{ML})(v-\hat{v}_{ML})^2+R(v) \\
+	\Rightarrow& \ell(v)-\ell(\hat{v}_{ML}) = \ell'(\hat{v}_{ML})(v-\hat{v}_{ML})+\frac12\ell''(\hat{v}_{ML})(v-\hat{v}_{ML})^2+R(v) \\
+	\Rightarrow& \tilde{\ell}(v) = S(\hat{v}_{ML})(v-\hat{v}_{ML})-\frac12\mathcal{I}(\hat{v}_{ML})(v-\hat{v}_{ML})^2+R(v) \\
+	\Rightarrow& \tilde{\ell}(v) = 0\cdot (v-\hat{v}_{ML})-\frac12\mathcal{I}(\hat{v}_{ML})(v-\hat{v}_{ML})^2+R(v) \\
+	\Rightarrow& \tilde{\ell}(v) = -\frac12\mathcal{I}(\hat{v}_{ML})(v-\hat{v}_{ML})^2+R(v) \\
+	\Rightarrow& \tilde{\ell}(v) \approx -\frac12\mathcal{I}(\hat{v}_{ML})(v-\hat{v}_{ML})^2
+\end{align*}
+So we need to find the observed Fisher information.
+
+PDF of each random variable \(X_k\):
+\[f_{X_k}(x_k;\mu,v) = \frac{1}{\sqrt{2\pi v}}e^{-\frac{(x_k-\mu)^2}{2v}}\]
+
+Likelihood:
+\begin{align*}
+	& L(v;x_{1:n},\mu) \\
+	=& \prod_{k=1}^n f_{X_k}(x_k;\mu,v) \\
+	=& \prod_{k=1}^n \left(\frac{1}{\sqrt{2\pi v}}e^{-\frac{(x_k-\mu)^2}{2v}}\right) \\
+	=& \prod_{k=1}^n \frac{1}{\sqrt{2\pi v}}\prod_{k=1}^ne^{-\frac{(x_k-\mu)^2}{2v}} \\
+	=& \left(\frac{1}{\sqrt{2\pi v}}\right)^n e^{-\frac{1}{2v}\sum_{k=1}^n(x_k-\mu)^2} \\
+\end{align*}
+Let \(q=\sum_{k=1}^n (x_k-\mu)^2\).
+
+Log-likelihood:
+\begin{align*}
+	& \ell(v;x_{1:n}, \mu) \\
+	& \ln L(v;x_{1:n}, \mu) \\
+	& \ln \left( \left(\frac{1}{\sqrt{2\pi v}}\right)^n e^{-\frac{q}{2v}} \right) \\
+	& \ln \left(\frac{n}{\sqrt{2\pi v}}\right)^n + \ln e^{-\frac{q}{2v}} \\
+	& -\frac{n}{2} \ln (2\pi v) - \frac{q}{2v} \\
+	& -\frac{n}{2}\ln(2\pi) -\frac{n}{2}\ln v - \frac{q}{2v}
+\end{align*}
+
+Log-likelihood kernel:
+\[\ell_{\text{Kern}}(v;x_{1:n},\mu) = -\frac{n}{2}\ln v - \frac{q}{2v}\]
+
+Score function:
+\begin{align*}
+	& S(v;x_{1:n},\mu) \\
+	=& \frac{d}{dv}\ell_{\text{Kern}}(v;x_{1:n},\mu) \\
+	=& \frac{d}{dv}\left(-\frac{n}{2}\ln v - \frac{q}{2v}\right) \\
+	=& \frac{q}{2v^2} - \frac{n}{2v}
+\end{align*}
+
+Fisher information:
+\begin{align*}
+	& \mathcal{I}(v;x_{1:n},\mu) \\
+	=& -\frac{d}{dv}S(v;x_{1:n},\mu) \\
+	=& -\frac{d}{dv}\left(\frac{q}{2v^2} - \frac{n}{2v}\right) \\
+	=& -\left(-\frac{2q}{2v^3} + \frac{n}{2v^2}\right) \\
+	=& \frac{2q}{2v^3} - \frac{n}{2v^2} \\
+	=& \frac{2q-nv}{2v^3}
+\end{align*}
+
+Find the root, \(v_0\), of the score function:
+\begin{align*}
+	& S(v_0;x_{1:n},\mu) = 0 \\
+	\Rightarrow& \frac{q}{2v_0^2} - \frac{n}{2v_0} = 0 \\
+	\Rightarrow& q - nv_0 = 0 \\
+	\Rightarrow& v_0 = \frac{q}{n}
+\end{align*}
+
+Fisher information evaluated at the root:
+\begin{align*}
+	& \mathcal{I}(v_0;x_{1:n},\mu) \\
+	=& \frac{2q-nv_0}{2v_0^3} \\
+	=& \frac{2q-n\cdot \frac{q}{n}}{2(\frac{q}{n})^3} \\
+	=& \frac{2q-q}{2(\frac{q}{n})^3} \\
+	=& \frac{q}{2(\frac{q}{n})^3} \\
+	=& \frac{n^3q}{2q^3} \\
+	=& \frac{n^3}{2q^2} \\
+	=& \frac{n^3}{2\left(\sum_{k=1}^n (x_k-\mu)^2\right)^2}
+\end{align*}
+This expression is positive since \(n>0\) and a sum of squared terms is positive,
+unless \(\forall k: x_k = \mu\).
+We presume that at least one \(x_k\) differs from \(\mu\).
+
+Since \(\mathcal{I}(v_0;x_{1:n},\mu) > 0\), \(v_0\) is a local maximum point of the likelihood function.
+
+The parameter space of \(v\)  is \(\Theta_v = \mathbb{R_+}\) since \(\sigma^2>0\) in \(\mathcal{N}(\mu,\sigma^2)\).
+
+Either \(v_0\) is a global maximum point, or there is no global maximum in case
+\(L(v;x_{1:n},\mu)\) approaches a value higher than \(L(v_0;x_{1:n},\mu)\) when
+\(v \to 0^+\) or \(v \to \infty\).
+
+Limit as \(v\to 0^+\):
+\begin{align*}
+	& \lim_{v\to 0^+} L(v;x_{1:n},\mu) \\
+	=& \lim_{v\to 0^+} \left(\left(\frac{1}{\sqrt{2\pi v}}\right)^n e^{-\frac{q}{2v}} \right) \\
+	=& \lim_{v\to 0^+} \left((2\pi)^{-\frac{n}{2}}v^{-\frac{n}{2}} (e^{q})^{-\frac{1}{2v}} \right) \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{v\to 0^+} \left(v^{-\frac{n}{2}} (e^{q})^{-\frac{1}{2v}} \right) \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{t\to \infty} \left(\left(\frac{1}{t}\right)^{-\frac{n}{2}} (e^{q})^{-\frac{1}{2\cdot 1/t}} \right) & (\text{Let }v=\frac{1}{t}) \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{t\to \infty} \left(t^{\frac{n}{2}} (e^{q})^{-\frac{1}{2}t} \right) \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{t\to \infty} \frac{t^{\frac{n}{2}}}{(e^{q})^{\frac{1}{2}t}} \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{t\to \infty} \frac{t^{\frac{n}{2}}}{(e^{q/2})^{t}} \\
+	=& (2\pi)^{-\frac{n}{2}}\cdot 0 & (\text{Converges to }0\text{ since }e^{q/2}>1\text{ due to }q/2>0) \\
+	=& 0
+\end{align*}
+
+Limit as \(v \to \infty\):
+\begin{align*}
+	& \lim_{v\to \infty} L(v;x_{1:n},\mu) \\
+	=& \lim_{v\to \infty} \left(\left(\frac{1}{\sqrt{2\pi v}}\right)^n e^{-\frac{q}{2v}} \right) \\
+	=& \lim_{v\to \infty} \left(\frac{1}{(2\pi v)^{\frac{n}{2}}e^{\frac{q}{2v}}} \right) \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{v\to \infty} \left(\frac{1}{v^{\frac{n}{2}}(e^{\frac{q}{2}})^\frac{1}{v}} \right) \\
+	=& (2\pi)^{-\frac{n}{2}}\lim_{v\to \infty} \left(\frac{1}{v^{\frac{n}{2}}}\cdot\frac{1}{(e^{\frac{q}{2}})^\frac{1}{v}} \right) \\
+	=& (2\pi)^{-\frac{n}{2}}\cdot \left(0\cdot\frac{1}{(e^{\frac{q}{2}})^0}\right) \\
+	=& 0
+\end{align*}
+
+Since \(L(v;x_{1:n},\mu)\) approaches \(0\) as \(v\to 0^+\) and \(v\to \infty\), and \(L(v_0;x_{1:n},\mu) > 0\),
+and the function is differentiable,
+the local maximum \(L(v_0;x_{1:n},\mu)\) is also the global maximum.
+
+Alternative (simpler) reasoning:
+Since the likelihood function only has one stationary point, and this point is a local maximum point, and
+the likelihood function is differentiable, the function has a concave shape and \(v_0\) is the global maximum.
+
+Hence, the MLE is:
+\[\hat{v}_{ML} = \operatorname*{argmax}_{v\in \Theta_v} L(v;x_{1:n},\mu) = v_0 = \frac{q}{n}\]
+
+We have already calculated the observed Fisher information:
+\[\mathcal{I}(\hat{v}_{ML};x_{1:n},\mu) = \frac{n^3}{2q^2} = \frac{n^3}{2\left(\sum_{k=1}^n (x_k-\mu)^2\right)^2}\]
+
+So the relative log-likelihood is approximately:
+\begin{align*}
+	& \tilde{\ell}(v;x_{1:n},\mu) \\
+	\approx& -\frac{1}{2}\mathcal{I}(\hat{v}_{ML};x_{1:n},\mu)(v-\hat{v}_{ML})^2 \\
+	=& -\frac{1}{2}\cdot \frac{n^3}{2q^2} (v-\frac{q}{n})^2 \\
+	=& -\frac{n}{4}\cdot \left(\frac{n}{q}\right)^2 (v-\frac{q}{n})^2 \\
+	=& -\frac{n}{4}(\frac{n}{q}\cdot(v-\frac{q}{n}))^2 \\
+	=& -\frac{n}{4}(\frac{n}{q}\cdot v-\frac{n}{q}\cdot\frac{q}{n})^2 \\
+	=& -\frac{n}{4}(\frac{nv}{q}-1)^2 \\
+	=& -\frac{n}{4}\left(\frac{n\sigma^2}{\sum_{k=1}^n (x_k-\mu)^2}-1\right)^2 \\
+\end{align*}
+\end{ssolution}
+
+\begin{ssubproblem}
+\textbf{2)} \(X_{1:n}\) is a random sample from an exponential distribution
+\(\operatorname{Exp}(\lambda)\).
+\end{ssubproblem}
+
+\textbf{Solution:}
+\begin{ssolution}
+
+PDF:
+\[f_{X_k}(x_k;\lambda) = \casesii{\lambda e^{-\lambda x_k}}{x_k\geq 0}{0} = \lambda e^{-\lambda x_k}\mathds{1}_{[0,\infty)}(x_k)\]
+
+Likelihood:
+\begin{align*}
+	& L(\lambda;x_{1:n}) \\
+	=& \prod_{k=1}^n f_{X_k}(x_k;\lambda) \\
+	=& \prod_{k=1}^n \left( \lambda e^{-\lambda x_k} \mathds{1}_{[0,\infty)}(x_k) \right) \\
+	=& \prod_{k=1}^n \left(\lambda e^{-\lambda x_k}\right) & (\text{since } \forall k:x_k \in \operatorname{supp}(f_{X_k})=[0,\infty)) \\
+	=& \lambda^n \prod_{k=1}^n e^{-\lambda x_k} \\
+	=& \lambda^n e^{-\lambda \sum_{k=1}^n x_k}
+\end{align*}
+
+Log-likelihood:
+\begin{align*}
+	& \ell(\lambda;x_{1:n}) \\
+	=& \ln L(\lambda;x_{1:n}) \\
+	=& \ln \left( \lambda^n e^{-\lambda \sum_{k=1}^n x_k} \right) \\
+	=& \ln \lambda^n + \ln e^{-\lambda \sum_{k=1}^n x_k} \\
+	=& n\ln \lambda -\lambda \sum_{k=1}^n x_k
+\end{align*}
+
+Score function:
+\begin{align*}
+	& S(\lambda;x_{1:n}) \\
+	=& \frac{d}{d\lambda} \ell(\lambda;x_{1:n}) \\
+	=& \frac{d}{d\lambda} \left( n\ln \lambda -\lambda \sum_{k=1}^n x_k \right) \\
+	=& \frac{n}{\lambda} -\sum_{k=1}^n x_k
+\end{align*}
+
+Root of the score function:
+\begin{align*}
+	& S(\lambda_0;x_{1:n}) = 0 \\
+	\Rightarrow& \frac{n}{\lambda_0} -\sum_{k=1}^n x_k = 0 \\
+	\Rightarrow& \frac{n}{\lambda_0} = \sum_{k=1}^n x_k \\
+	\Rightarrow& \lambda_0 = \frac{n}{\sum_{k=1}^n x_k}
+\end{align*}
+\(\lambda_0\) is positive except in the case \(\forall k: x_k=0\), which we disregard.
+
+Fisher information:
+\begin{align*}
+	& \mathcal{I}(\lambda;x_{1:n}) \\
+	=& -\frac{d}{d\lambda}\left( \frac{n}{\lambda} - \sum_{k=1}^n x_k \right) \\
+	=& -\left( -\frac{n}{\lambda^2} \right) \\
+	=& \frac{n}{\lambda^2}
+\end{align*}
+which is positive for \(\lambda>0\).
+
+Since \(\lambda_0>0\), \(\mathcal{I}(\lambda_0;x_{1:n})>0\).
+Hence, \(\lambda_0\) is a local maximum point of the likelihood function.
+
+The parameter space for \(\lambda\) is \(\Theta_\lambda = \mathbb{R}_{\geq 0}\).
+
+Since there is only one stationary point, and this point is a local maximum point,
+and the likelihood function is differentiable,
+the function has a concave shape.
+Ergo, we can disregard the possibility of greater values
+\(\mathcal{I}(\lambda)>\mathcal{I}(\lambda_0)\)
+at the boundary
+point \(\lambda=0\) and when \(\lambda\to \infty\).
+
+Hence, \(v_0\) is a global maximum and the MLE is:
+\[\hat{\lambda}_{ML} = \lambda_0 = \frac{n}{\sum_{k=1}^n x_k}\]
+
+Observed Fisher information:
+\begin{align*}
+	& \mathcal{I}(\hat{\lambda}_{ML};x_{1:n}) \\
+	=& \frac{n}{\hat{\lambda}_{ML}^2} \\
+	=& \frac{n}{\left(\frac{n}{\sum_{k=1}^n x_k}\right)^2} \\
+	=& \frac{1}{n}\left(\sum_{k=1}^n x_k\right)^2 \\
+\end{align*}
+
+Relative likelihood:
+\begin{align*}
+	& \tilde{\ell}(\lambda;x_{1:n}) \\
+	\approx& -\frac12 \mathcal{I}(\hat{\lambda}_{ML};x_{1:n})(\lambda-\hat{\lambda}_{ML})^2 \\
+	=& -\frac12 \cdot \frac{1}{n}\left(\sum_{k=1}^n x_k\right)^2\left(\lambda-\frac{n}{\sum_{k=1}^n}\right)^2 \\
+	=& -\frac{1}{2n} \left(\lambda\sum_{k=1}^n x_k-n\right)^2 \\
+\end{align*}
+
+\end{ssolution}
+
+\subsection{Additional exercise 2}
+
+\begin{sproblem}
+The number of bacteria in a bacterial culture that is \(i\) days old can be
+described by the random variable \(X \sim \operatorname{Poisson}(\lambda i)\).
+A group of scientists decides to start five bacterial cultures. Each day
+(starting when the cultures are one day old) they select one culture, count its
+number of bacteria and then destroy the culture. Let \(x_i\) be the number of
+bacteria counted in the \(i\)th culture, and assume independence between
+different cultures, i.e. \(x_1, \ldots , x_n\) are independent realizations.
+\end{sproblem}
+
+\begin{ssubproblem}
+\textbf{a)} Formulate a statistical model for the above described experiment.
+\end{ssubproblem}
+
+\begin{ssolution}
+Our statistical model is a parametric model which can be defined formally as a tuple
+\[(\Omega, \mathcal{A}, \Theta, \mathcal{F},V)\]
+consisting of the following components:
+
+\begin{itemize}
+	\item \(\Omega\) is the sample space, i.e. the total set of potential outcomes of the experiment.
+	\item \(\mathcal{A}\) is the event space, a \(\sigma\)-algebra on \(\Omega\).
+	\item \(\Theta = (0,\infty)\) is the parameter space, i.e. the set of potential values for parameter \(\lambda\).
+	\item \(\mathcal{F} : \Theta \to (\mathcal{A}\to [0,1])\) is a parametric
+family, specifically a function which maps each parameter
+\(\lambda\) in the parameter space to a probability measure
+\(P_\lambda: \mathcal{A} \to [0,1]\), which in turn maps each event to a
+probability.
+	\item\(V=\{X_1, X_2, X_3, X_4, X_5\}\) is a set of random variables, where each
+\(X_i\) is a function \(X_i : \Omega \to \mathbb{R}\) defined by
+\[\forall \omega\in \Omega : X_i(\omega) = n,\text{ where }n\text{ is the number of bacteria counted in culture }i\text{ within outcome }\omega \]
+\end{itemize}
+
+What remains is to precisely define \(\mathcal{F}\).
+Since \(V\) is an independent set of random variables, we know that:
+\[\forall \lambda\in \Theta: P_\lambda\left(\bigcap_{i=1}^5\{X_i=x_i\}\right) = \prod_{i=1}^5 P_\lambda(X_i=x_i)\]
+or equivalently expressed using PMFs:
+\[p_{X_{1:5}}(x_{1:5};\lambda) = \prod_{i=1}^5 p_{X_i}(x_i;\lambda i)\]
+
+Furthermore, we know that each \(X_i \sim \operatorname{Poisson}(\lambda i)\), so:
+\[p_{X_i}(x;\lambda i) = \frac{(\lambda i)^x e^{-\lambda i}}{x!}\]
+And their joint PMF is:
+\begin{align*}
+	& p_{X_{1:5}}(x_{1:5};\lambda) \\
+	=& \prod_{i=1}^5 p_{X_i}(x_i;\lambda i) \\
+	=& \prod_{i=1}^5\frac{(\lambda i)^{x_i}e^{-\lambda i}}{x_i !} \\
+	=& \prod_{i=1}^5\frac{\lambda^{x_i} i^{x_i}e^{-\lambda i}}{x_i !} \\
+	=& \lambda^{\sum_{i=1}^5 x_i} e^{-\lambda \sum_{i=1}^5 i}\prod_{i=1}^5\frac{i^{x_i}}{x_i !} \\
+	=& \lambda^{x_1+x_2+x_3+x_4+x_5} e^{-15\lambda}\frac{2^{x_2}3^{x_3}4^{x_4}5^{x_5}}{x_1! x_2! x_3! x_4! x_5!} \\
+\end{align*}
+
+\end{ssolution}
+
+\begin{ssubproblem}
+\textbf{b)} Find a (one-dimensional) sufficient statistic for \(\lambda\).
+\end{ssubproblem}
+
+\begin{ssolution}
+Consider the statistic function
+\[h: \mathbb{R}^5 \to \mathbb{R}, \ h(x_{1:5}) = \sum_{i=1}^5 x_i\]
+which yields the random statistic \(T=h(X_{1:5})\) and realized statistic \(t = h(x_{1:5}) = \sum_{i=1}^5 x_i\).
+\begin{align*}
+	& p_{X_{1:5}}(x_{1:5};\lambda) \\
+	=& \lambda^{\sum_{i=1}^5 x_i} e^{-\lambda \sum_{i=1}^5 i}\prod_{i=1}^5\frac{i^{x_i}}{x_i !} \\
+	=& \underbrace{\lambda^t e^{-15\lambda}}_{g_1(t;\lambda)} \cdot \underbrace{\prod_{i=1}^5\frac{i^{x_i}}{x_i !}}_{g_2(x_{1:5})} \\
+\end{align*}
+Since we have managed to write the joint PMF as a product \(g_1(t;\lambda)\cdot g_2(x_{1:n})\),
+the factorization theorem yields that
+\(T\) is a sufficient statistic.
+\end{ssolution}
+
+\begin{ssubproblem}
+\textbf{c)}
+Another possible strategy would be to count all bacteria on the fifth day,
+which would result in a sample \(y_1, \ldots , y_5\) of independent
+realizations of \(Y \sim \operatorname{Poisson}(5\lambda)\). Compare the Fisher
+information (with respect to \(\lambda\)) for the two strategies.
+\end{ssubproblem}
+
+\begin{ssolution}
+
+Let's find the Fisher information for the first scenario.
+
+Likelihood:
+\begin{align*}
+	& L(\lambda;x_{1:5}) \\
+	=& p_{X_{1:5}}(x_{1:5};\lambda) \\
+	=& \lambda^{\sum_{i=1}^5 x_i} e^{-15\lambda}\prod_{i=1}^5\frac{i^{x_i}}{x_i !}
+\end{align*}
+
+Log-likelihood:
+\begin{align*}
+	& \ell(\lambda;x_{1:5}) \\
+	=& \ln L(\lambda;x_{1:5}) \\
+	=& \ln \left( \lambda^{\sum_{i=1}^5 x_i} e^{-15\lambda}\prod_{i=1}^5\frac{i^{x_i}}{x_i !} \right) \\
+	=& \ln \left( \lambda^{\sum_{i=1}^5 x_i} \right) + \ln \left( e^{-15\lambda} \right) + \ln \left( \prod_{i=1}^5\frac{i^{x_i}}{x_i !} \right) \\
+	=& \ln \lambda \sum_{i=1}^5 x_i - 15\lambda + \sum_{i=1}^5\ln \left( \frac{i^{x_i}}{x_i !} \right) \\
+	=& \ln \lambda \sum_{i=1}^5 x_i - 15\lambda + \sum_{i=1}^5\ln i^{x_i} - \sum_{i=1}^5\ln (x_i!) \\
+	=& \ln \lambda \sum_{i=1}^5 x_i - 15\lambda + \sum_{i=2}^5 x_i\ln i - \sum_{i=1}^5\ln (x_i!)
+\end{align*}
+
+Log-likelihood kernel:
+\[\ell_{\text{Kern}}(\lambda;x_{1:5}) = \ln \lambda \sum_{i=1}^5 x_i - 15\lambda\]
+
+Score function:
+\begin{align*}
+	& S(\lambda;x_{1:5}) \\
+	=& \frac{d}{d\lambda} \ell_{\text{Kern}}(\lambda;x_{1:5}) \\
+	=& \frac{d}{d\lambda} \left(\ln \lambda \sum_{i=1}^5 x_i - 15\lambda \right) \\
+	=& \frac{1}{\lambda} \sum_{i=1}^5 x_i - 15
+\end{align*}
+
+Fisher information:
+\begin{align*}
+	& \mathcal{I}(\lambda;x_{1:5}) \\
+	=& -\frac{d}{d\lambda}S(\lambda;x_{1:5}) \\
+	=& -\frac{d}{d\lambda} \left(\frac{1}{\lambda} \sum_{i=1}^5 x_i - 15\right) \\
+	=& -\left(-\frac{1}{\lambda^2} \sum_{i=1}^5 x_i \right) \\
+	=& \frac{1}{\lambda^2} \sum_{i=1}^5 x_i
+\end{align*}
+
+Let \(Y_1,\ldots,Y_5\) be the random sample which realized \(y_1,\ldots,y_5\) in the second scenario.
+
+Likelihood:
+\begin{align*}
+	& L(\lambda;y_{1:5}) \\
+	=& p_{Y_{1:5}}(y_{1:5};\lambda) \\
+	=& \prod_{i=1}^5 p_{Y_i}(y_i;5\lambda) \\
+	=& \prod_{i=1}^5 p_{Y_1}(y_i;5\lambda) \\
+	=& \prod_{i=1}^5 \frac{(5\lambda)^{y_i} e^{-5\lambda}}{y_i!} \\
+	=& \prod_{i=1}^5 5^{y_i} \prod_{i=1}^5\lambda^{y_i} \prod_{i=1}^5e^{-5\lambda} \prod_{i=1}^5(y_i!)^{-1} \\
+	=& 5^{\sum_{i=1}^5 y_i} \lambda^{\sum_{i=1}^5 y_i} e^{-25\lambda} \prod_{i=1}^5(y_i!)^{-1}
+\end{align*}
+
+Log-likelihood:
+\begin{align*}
+	& \ell(\lambda;y_{1:5}) \\
+	=& \ln L(\lambda;y_{1:5}) \\
+	=& \ln \left( 5^{\sum_{i=1}^5 y_i} \lambda^{\sum_{i=1}^5 y_i} e^{-25\lambda} \prod_{i=1}^5(y_i!)^{-1} \right) \\
+	=& \ln 5^{\sum_{i=1}^5 y_i} + \ln\lambda^{\sum_{i=1}^5 y_i} + \ln e^{-25\lambda} + \ln \prod_{i=1}^5(y_i!)^{-1} \\
+	=& \ln(5)\sum_{i=1}^5 y_i + \ln(\lambda)\sum_{i=1}^5 y_i - 25\lambda - \ln \sum_{i=1}^5(y_i!)
+\end{align*}
+
+Log-likelihood kernel:
+\[\ell_{\text{Kern}}(\lambda;y_{1:5}) = \ln(\lambda)\sum_{i=1}^5 y_i - 25\lambda \]
+
+Score function:
+\begin{align*}
+	& S(\lambda;y_{1:5}) \\
+	=& \frac{d}{d\lambda}\ell_{\text{Kern}}(\lambda;y_{1:5}) \\
+	=& \frac{d}{d\lambda} \left(\ln(\lambda)\sum_{i=1}^5 y_i - 25\lambda\right) \\
+	=& \frac{1}{\lambda}\sum_{i=1}^5 y_i - 25
+\end{align*}
+
+Fisher information:
+\begin{align*}
+	& \mathcal{I}(\lambda;y_{1:5}) \\
+	=& -\frac{d}{d\lambda}S(\lambda;y_{1:5}) \\
+	=& -\frac{d}{d\lambda}\left( \frac{1}{\lambda}\sum_{i=1}^5 y_i - 25 \right) \\
+	=& -\left( -\frac{1}{\lambda^2}\sum_{i=1}^5 y_i \right) \\
+	=& \frac{1}{\lambda^2}\sum_{i=1}^5 y_i
+\end{align*}
+
+So the Fisher information the two scenarios are
+\(\frac{1}{\lambda^2}\sum_{i=1}^5 x_i\)
+and
+\(\frac{1}{\lambda^2}\sum_{i=1}^5 y_i\),
+respectively.
+Both values are inversely proportional to \(\lambda^2\).
+
+The value in the second scenario is likely to be greater since the expected values are greater.
+To show this, we can
+use an alternative definition of Fisher information
+compare the expected value of the negative second derivative of the
+log-likelihood function in the two scenarios:
+\begin{align*}
+	& -\mathbb{E}\left(\frac{d^2}{d\lambda^2} \ell(\lambda;X_{1:5})\right) \\
+	=& -\mathbb{E}\left(-\frac{1}{\lambda^2}\sum_{i=1}^5 X_i\right) \\
+	=& \frac{1}{\lambda^2}\sum_{i=1}^5 \mathbb{E}(X_i) \\
+	=& \frac{1}{\lambda^2}\sum_{i=1}^5 (i \lambda) \\
+	=& \frac{\lambda}{\lambda^2}\sum_{i=1}^5 i \\
+	=& \frac{\lambda}{\lambda^2}\cdot 15 \\
+	=& \frac{15}{\lambda}
+\end{align*}
+
+Second scenario:
+\begin{align*}
+	& -\mathbb{E}\left(\frac{d^2}{d\lambda^2} \ell(\lambda;Y_{1:5})\right) \\
+	=& -\mathbb{E}\left(-\frac{1}{\lambda^2}\sum_{i=1}^5 Y_i\right) \\
+	=& \frac{1}{\lambda^2}\sum_{i=1}^5 \mathbb{E}(Y_i) \\
+	=& \frac{1}{\lambda^2}\sum_{i=1}^5 (5\lambda) \\
+	=& \frac{\lambda}{\lambda^2}\cdot 25\lambda \\
+	=& \frac{25}{\lambda}
+\end{align*}
+
+So the expected value is higher in the second scenario:
+\(\frac{25}{\lambda} > \frac{15}{\lambda}\).
+
+\end{ssolution}
+
+\section{Likelihood and Bayesian Inference}
+
+\subsection{Exercise 2.6.1.a), p.48}
+\begin{sproblem}
+In a study of a fungus that infects wheat, 250 wheat seeds are disseminated
+after contaminating them with the fungus. The research question is how large
+the probability \(\theta\) is that an infected seed can germinate. Due to
+technical problems, the exact number of germinated seeds cannot be evaluated,
+but we know only that less than 25 seeds have germinated. Write down the
+likelihood function for \(\theta\) based on the information available from the
+experiment.
+\end{sproblem}
+
+\textbf{Solution:}
+\begin{ssolution}
+
+Let \(X_k=1\) if seed \(k\) is germinated, and \(X_k=0\) if it isn't.
+
+Then \(X_k \sim \operatorname{Bern}(\theta)\).
+
+Let \(X=\sum_{k=1}^{250} X_k\).
+
+Then \(X\sim \operatorname{Bin}(250, \theta)\).
+
+We also know that \(X<25\), so \(X\leq 24\).
+
+\begin{align*}
+	& L(\theta) \\
+	& P(X\leq 24;\theta) \\
+	& P(X\in \{0,\ldots,24\};\theta) \\
+	& P(X=0\vee\ldots\vee X=24;\theta) \\
+	& P(X=0;\theta)+\ldots +P(X=24;\theta) \\
+	& \sum_{x=0}^{24} P(X=x;\theta) \\
+	& \sum_{x=0}^{24} \binom{250}{x} \theta^x (1-\theta)^{250-x} & (\text{a.k.a. CDF, }F_X(24))
+\end{align*}
+\end{ssolution}
+
+\subsection{Exercise 2.6.1.b), p.48}
+
+\begin{sproblem}
+Let \( X_{1:n} \) be a random sample from an \( \mathcal{N}(\theta, 1) \) distribution.
+However, only the largest value of the sample,
+\[ Y = \max(X_1, \ldots, X_n), \]
+is known. Show that the density of \( Y \) is
+\[ f(y) = n \left\{ \Phi(y - \theta) \right\}^{n-1} \varphi(y - \theta), \quad y \in \mathbb{R}, \]
+where \( \Phi(\cdot) \) is the distribution function, and \( \varphi(\cdot) \)
+is the density function of the standard normal distribution \( \mathcal{N}(0, 1) \).
+
+Derive the distribution function of \( Y \) and the likelihood function \( L(\theta) \).
+\end{sproblem}
 
 \section{Misc problems}
 \subsection{Boxes with chips}
 
+\begin{sproblem}
 Two boxes, A and B.
 One box contains 50 \% defective chips. Another box contains 10 \% defective chips.
 You pick 10 chips from box A. The first 3 chips are defective while the rest are fine.
 
 Which box do you think contains the 10 \% defective chips: A or B?
+\end{sproblem}
 
 \textbf{Solution:}
+\begin{ssolution}
 
 Let \(X\) be a random variable such that \(X=1\) if you pick a defective chip from box A, and \(X=0\) otherwise.
 
@@ -92,18 +886,24 @@ Therefore, box A is probably the box with 50 \% defective chips in it.
 Furthermore, if nothing was known about the boxes, then
 \[\hat{\theta} = \frac{\bar{x}_n}{n} = \frac{3}{10}\]
 would be the maximum-likelihood estimate of \(\theta\).
+\end{ssolution}
 
 \subsection{Likelihood}
 
+\begin{sproblem}
 Let \(X\sim \operatorname{Bern}(\theta)\).
+\end{sproblem}
 
+\begin{ssubproblem}
 a)
 Consider a random sample r.v. of size 1, i.e. \(X_1\).
 Consider a realization of this sample, i.e. \(x_1\).
 
 What is the likelihood function for this sample?
+\end{ssubproblem}
 
 \textbf{Solution:}
+\begin{ssolution}
 
 \(X\) has a PMF:
 \[p_{\theta;X}(x) = \casesiie{\theta}{x=1}{1-\theta}{x=0}\]
@@ -115,14 +915,18 @@ What is the likelihood function for this sample?
     =& \casesiie{\theta}{x_1=1}{1-\theta}{x_1=0} \\
     =& \theta^{x_1}(1-\theta)^{1-x_1}
 \end{align*}
+\end{ssolution}
 
+\begin{ssubproblem}
 b)
 Consider a random sample r.v. of size 2, i.e. \(X_1, X_2\).
 Consider a realization of this sample, i.e. \(x_1, x_2\).
 
 What is the likelihood function for this sample?
+\end{ssubproblem}
 
 \textbf{Solution:}
+\begin{ssolution}
 
 \begin{align*}
      & L(\theta;x_1,x_2) \\
@@ -134,14 +938,18 @@ What is the likelihood function for this sample?
     =& \casesiiie{\theta^2}{(x_1,x_2)=(1,1)}{\theta(1-\theta)}{(x_1,x_2)\in\{(1,0),(0,1)\}}{(1-\theta)^2}{(x_1,x_2)=(0,0)} \\
     =& \theta^{x_1+x_2}(1-\theta)^{2-(x_1+x_2)}
 \end{align*}
+\end{ssolution}
 
+\begin{ssubproblem}
 c)
 Consider a random sample r.v. of size n, i.e. \(X_{1:n}=(X_1, \ldots, X_n)\).
 Consider a realization of this sample, i.e. \(x=(x_1, \ldots, x_n)\).
 
 What is the likelihood function for this sample?
+\end{ssubproblem}
 
 \textbf{Solution:}
+\begin{ssolution}
 
 \begin{align*}
      & L(\theta;x) \\
@@ -156,4 +964,50 @@ What is the likelihood function for this sample?
     =& \theta^{\bar{x}} (1-\theta)^{n-\bar{x}}
 \end{align*}
 where \(\bar{x}=\sum_{k=1}^n x_k=x_1+\ldots+x_n\).
+\end{ssolution}
+
+\section{Definitions}
+\subsection{What is a parametric model?}
+
+A parametric model is a tuple
+\[(\Omega, \mathcal{A}, \Theta, \mathcal{F},V)\]
+consisting of the following components:
+
+\begin{itemize}
+	\item \(\Omega\) is the sample space, i.e. the total set of potential outcomes of the experiment.
+	\item \(\mathcal{A}\) is the event space, a \(\sigma\)-algebra on \(\Omega\).
+	\item \(\Theta \subseteq \mathbb{R}^n\) is the parameter space, i.e. the set of potential permutations of values for the \(n\) parameters in the model.
+	\item \(\mathcal{F} : \Theta \to (\mathcal{A}\to [0,1])\) is a parametric
+family, specifically a function which maps each parameter vector
+\(\boldsymbol{\theta}\) in \(\Theta\) to a probability measure
+\(P_{\boldsymbol{\theta}}: \mathcal{A} \to [0,1]\), which in turn maps each event to a
+probability.
+	\item\(V=\{X_1, \ldots, X_n\}\) is a set of random variables, i.e.
+functions \(X_i:\Omega \to \mathbb{R}\).
+\end{itemize}
+
+\textbf{Example:}
+
+You toss a coin. Alice claims that the coin is fair. Bob claims that the coin
+is double-headed. Who is right?
+
+\begin{itemize}
+	\item \(\Omega = \{H,T\}\)
+	\item \(\mathcal{A} = \{\varnothing, \{H\}, \{T\}, \{H,T\}\}\)
+	\item \(\Theta = \{0.5,1\}\)
+	\item \(\mathcal{F}(0.5) = P_{0.5}, \ \mathcal{F}(1) = P_1\)
+	\item\(V=\{X\}\) where \(X(\omega)\) is the number of heads after one coin toss in outcome \(\omega\)
+\end{itemize}
+where
+\[
+\begin{array}{lcr}
+	P_{0.5}(X=1) = 0.5 & \text{ alternatively } & p_X(1;0.5) = 0.5 \\
+	P_{0.5}(X=0) = 0.5 & \text{ alternatively } & p_X(0;0.5) = 0.5 \\
+	P_1(X=1) = 1 & \text{ alternatively } & p_X(1;1) = 1 \\
+	P_1(X=0) = 0 & \text{ alternatively } & p_X(0;1) = 0
+\end{array}
+\]
+
+Equivalently, you can state that \(X \sim \operatorname{Be}(p)\), where either \(p=0.5\) or \(p=1\).
+
 \end{document}
